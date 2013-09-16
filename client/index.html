@@ -1,0 +1,108 @@
+<head>
+<title>Shark</title>
+</head>
+
+<body>
+    {{>navigation}}
+
+    <div class="container">
+        {{>view}}
+    </div>
+
+    <footer class="bs-footer" role="contentinfo">
+          <div class="container">
+          </div>
+    </footer>
+</body>
+
+<template name="navigation">
+    <div class="navbar navbar-fixed-top">
+        <div class="container">
+            <a href="/" class="navbar-brand">Shark</a>
+            <ul class="nav navbar-nav pull-right">
+                {{>user_info}}
+            </ul>
+        </div>
+    </div>
+</template>
+
+<template name="user_info">
+    {{#if currentUser}}
+        {{> user_loggedin}}
+    {{else}}
+        {{> user_loggedout}}
+    {{/if}}
+</template>
+
+<template name="user_loggedin">
+	{{#if loggingIn}}
+		<li><a>Logging in...</a></li>
+	{{else}}
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 9px 15px;">
+                <img class="img-rounded" style="height: 32px; margin-right: 4px;" src="https://graph.facebook.com/{{currentUser.services.facebook.id}}/picture" />
+				{{currentUser.profile.name}}
+				<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+				<li><a>Account Settings</a></li>
+				<li class="divider"></li>
+				<li><a id="logout">Logout</a></li>
+			</ul>
+		</li>
+	{{/if}}
+</template>
+
+<template name="user_loggedout">
+    <li><a id="login"><img src="/f-connect.png"></a></li>
+</template>
+
+<template name="view">
+    {{#if is_viewing_game}}
+        {{>game}}
+    {{else}}
+        {{>tables}}
+    {{/if}}
+</template>
+
+<template name="tables">
+    <div class="col-lg-6">
+        <h3>Running Tables</h3>
+        <div class="list-group">
+            <a href="#" class="list-group-item">
+                Cras justo odio
+            </a>
+            <a href="#" class="list-group-item">Dapibus ac facilisis in
+            </a>
+            <a href="#" class="list-group-item">Morbi leo risus
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <h3>Open Tables {{>new_table}}</h3>
+        {{>open_tables}}
+    </div>
+</template>
+
+<template name="open_tables">
+    <ul class="list-group">
+        {{#each tables}}
+            {{#if is_mine}}
+            <li class="list-group-item">{{owner}} <button type="button" class="btn btn-primary{{#unless currentUser}} disabled{{/unless}}" style="float: right;">start</button></li>
+            {{else}}
+            <li class="list-group-item">{{owner}} <button type="button" class="btn btn-primary{{#unless currentUser}} disabled{{/unless}}" style="float: right;">Join</button></li>
+            {{/if}}
+        {{/each}}
+    </ul>
+</template>
+
+<template name="new_table">
+    <button type="button" class="btn btn-primary{{#unless currentUser}} disabled{{/unless}}" style="float: right; margin-top: -4px;">Open a new table</button>
+</template>
+
+<template name="game">
+    <table>{{map}}</table>
+    <div class="prices">{{prices}}</div>
+    <div class="stocks">{{stocks}}</div>
+    <div class="markers">{{markers}}</div>
+</template>
