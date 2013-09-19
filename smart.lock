@@ -8,8 +8,8 @@
     "packages": {
       "bootstrap-3": {
         "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
-        "tag": "v0.3.3",
-        "commit": "bbb5b5eb3e36aff6a740889a965c8bdb8586ef14"
+        "tag": "v0.3.4",
+        "commit": "680c056e849d079a1b669247f347da2b443aad91"
       },
       "winston": {
         "git": "https://github.com/tomrogers3/meteor-winston.git",

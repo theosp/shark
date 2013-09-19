@@ -18,7 +18,7 @@
 <template name="navigation">
     <div class="navbar navbar-fixed-top">
         <div class="container">
-            <a href="/" class="navbar-brand">Shark</a>
+            <a href="#" class="navbar-brand logo">Shark</a>
             <ul class="nav navbar-nav pull-right">
                 {{>user_info}}
             </ul>
@@ -68,36 +68,34 @@
 <template name="tables">
     <div class="col-lg-6">
         <h3>Running Tables</h3>
-        <div class="list-group">
-            <a href="#" class="list-group-item">
-                Cras justo odio
-            </a>
-            <a href="#" class="list-group-item">Dapibus ac facilisis in
-            </a>
-            <a href="#" class="list-group-item">Morbi leo risus
-            </a>
-        </div>
+        <ul class="list-group">
+            <li class="list-group-item"></li>
+            <li class="list-group-item"></li>
+            <li class="list-group-item"></li>
+        </ul>
     </div>
     <div class="col-lg-6">
-        <h3>Open Tables {{>new_table}}</h3>
+        <h3>Open Tables</h3>
         {{>open_tables}}
+
+        {{#if currentUser}}
+            <h3>Create Table</h3>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <div style="float: left; margin-right: 10px;">Number of playerts:</div>
+                    <input type="range" class="size" name="points" min="3" max="6" value="3">
+                    <button type="button" class="btn btn-primary create" style="float: right; margin-top: -4px;">Create</button></li>
+            </ul>
+        {{/if}}
     </div>
 </template>
 
 <template name="open_tables">
     <ul class="list-group">
         {{#each tables}}
-            {{#if is_mine}}
-            <li class="list-group-item">{{owner}} <button type="button" class="btn btn-primary{{#unless currentUser}} disabled{{/unless}}" style="float: right;">start</button></li>
-            {{else}}
-            <li class="list-group-item">{{owner}} <button type="button" class="btn btn-primary{{#unless currentUser}} disabled{{/unless}}" style="float: right;">Join</button></li>
-            {{/if}}
+            <li class="list-group-item"></li>
         {{/each}}
     </ul>
-</template>
-
-<template name="new_table">
-    <button type="button" class="btn btn-primary{{#unless currentUser}} disabled{{/unless}}" style="float: right; margin-top: -4px;">Open a new table</button>
 </template>
 
 <template name="game">

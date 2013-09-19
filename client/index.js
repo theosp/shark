@@ -1,12 +1,37 @@
-Meteor.subscribe("userData");
-Meteor.subscribe("openTables");
-Meteor.subscribe("runningTables");
+Session.set("is_viewing_game", false);
 
-Template.new_table.events({
-	"click .btn": function(e, tmpl){
-        Tables.insert({state: "open", owner: Meteor.userId(), players: []});
-        console.log(this.userId);
+Meteor.subscribe("userData");
+
+var open_tables_sub, running_tables_sub;
+Deps.autorun(function () {
+    if (!Session.get("is_viewing_game")) {
+        open_tables_sub = Meteor.subscribe("openTables");
+        running_tables_sub = Meteor.subscribe("runningTables");
+    } else {
+        open_tables_sub.stop();
+        running_tables_sub.stop();
+    }
+});
+
+Template.navigation.events({
+	"click .logo": function(e, tmpl){
+        Session.set("is_viewing_game", false);
+	}
+});
+
+Template.tables.rendered = function () {
+    $('.size').slider({min: 3, max: 6, value: $('.size').val()});
+
+    $(window).resize();
+};
+
+Template.tables.events({
+	"click .create": function(e, tmpl){
+        window.a = tmpl;
+        console.log(tmpl);
         
+        var u = Meteor.user();
+        Tables.insert({state: "open", /*size: , */players: [{id: u._id, fb_id: u.services.facebook.id, name: u.profile.name}]});
 	}
 });
 
@@ -14,9 +39,11 @@ Template.open_tables.tables = function () {
     return Tables.find({state: "open"});
 };
 
-Template.open_tables.is_mine = function () {
-    return this.owner === Meteor.userId();
-};
+Template.open_tables.events({
+	"click .btn-leave-join": function(e, tmpl){
+        return Session.set("is_viewing_game", true);
+	}
+});
 
 Template.user_loggedout.events({
 	"click #login": function(e, tmpl){
