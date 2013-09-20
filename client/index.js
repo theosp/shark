@@ -27,11 +27,8 @@ Template.tables.rendered = function () {
 
 Template.tables.events({
 	"click .create": function(e, tmpl){
-        window.a = tmpl;
-        console.log(tmpl);
-        
         var u = Meteor.user();
-        Tables.insert({state: "open", /*size: , */players: [{id: u._id, fb_id: u.services.facebook.id, name: u.profile.name}]});
+        Tables.insert({state: "open", size: parseInt($(tmpl.find("input")).val()), players: [{id: u._id, fb_id: u.services.facebook.id, name: u.profile.name}]});
 	}
 });
 
@@ -39,9 +36,38 @@ Template.open_tables.tables = function () {
     return Tables.find({state: "open"});
 };
 
+Template.open_tables.chairs = function () {
+    var chairs = this.players.slice();
+
+    for (var i = 0; i < (this.size - this.players.length); i++) {
+        chairs.push(null);
+    }
+
+    return chairs;
+};
+
+Template.open_tables.myself = function () {
+    return this.id === Meteor.userId() ? "myself" : "";
+};
+
+Template.open_tables.sitting = function () {
+    for (var i = 0; i < this.players.length; i++) {
+        if (this.players[i].id === Meteor.userId()) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+Template.open_tables.rendered = function () {
+    $(".logged-in .table:not(.sitting) .empty-chair").tooltip({title: "Click to join!"})
+    $(".myself").tooltip({title: "Click to leave"})
+};
+
+
 Template.open_tables.events({
-	"click .btn-leave-join": function(e, tmpl){
-        return Session.set("is_viewing_game", true);
+	"click .empty-chair": function(e, tmpl){
 	}
 });
 

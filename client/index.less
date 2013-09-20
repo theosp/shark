@@ -1,4 +1,7 @@
+@import "elements.less";
+
 @navbar-outer-height: 50px;
+@empty-chair-background: white;
 body {
     padding-top: @navbar-outer-height + 5;
 }
@@ -29,4 +32,40 @@ body {
 
 .list-group .btn {
     float: right;
+}
+
+
+.open-tables:not(.logged-in) .create-table {
+    display: none;
+}
+
+.chair {
+    display: inline-block;
+    .rounded (6px);
+
+    width: 32px;
+    height: 32px;
+
+    img {
+        vertical-align: baseline;
+        width: 32px;
+        height: 32px;
+        .rounded (6px);
+    }
+
+    &.empty-chair {
+        background-color: @empty-chair-background;
+        border: thin dashed black;
+    }
+
+    .logged-in .table:not(.sitting) &.empty-chair {
+        &:hover {
+            background-color: #f8f8f8;
+            cursor: pointer;
+        }
+    }
+
+    &.myself {
+        cursor: pointer;
+    }
 }

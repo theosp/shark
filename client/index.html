@@ -14,6 +14,7 @@
           <div class="container">
           </div>
     </footer>
+
 </body>
 
 <template name="navigation">
@@ -75,26 +76,35 @@
             <li class="list-group-item"></li>
         </ul>
     </div>
-    <div class="col-lg-6">
+    
+    <div class="col-lg-6 open-tables{{#if currentUser}} logged-in{{/if}}">
         <h3>Open Tables</h3>
         {{>open_tables}}
 
-        {{#if currentUser}}
+        <div class="create-table">
             <h3>Create Table</h3>
-            <ul class="list-group">
+            <ul class="list-group ">
                 <li class="list-group-item">
-                    <div style="float: left; margin-right: 10px;">Number of playerts:</div>
+                    <div style="float: left; margin-right: 15px;">Number of playerts:</div>
                     <input type="range" class="size" name="points" min="3" max="6" value="3">
                     <button type="button" class="btn btn-primary create" style="float: right; margin-top: -4px;">Create</button></li>
             </ul>
-        {{/if}}
+        </div>
     </div>
 </template>
 
 <template name="open_tables">
     <ul class="list-group">
         {{#each tables}}
-            <li class="list-group-item"></li>
+            <li class="list-group-item table {{#if sitting}} sitting{{/if}}">
+                {{#each chairs}}
+                    {{#if fb_id}}
+                        <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture"></span>
+                    {{else}}
+                        <span class="chair empty-chair"></span>
+                    {{/if}}
+                {{/each}}
+            </li>
         {{/each}}
     </ul>
 </template>
