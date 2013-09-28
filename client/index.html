@@ -70,33 +70,32 @@
 <template name="tables">
     <div class="col-lg-6">
         <h3>Running Tables</h3>
-        <ul class="list-group">
-            <li class="list-group-item"></li>
-            <li class="list-group-item"></li>
-            <li class="list-group-item"></li>
-        </ul>
+        {{>running_tables}}
     </div>
     
     <div class="col-lg-6 open-tables{{#if currentUser}} logged-in{{/if}}">
         <h3>Open Tables</h3>
         {{>open_tables}}
 
+        {{#if can_create_table}}
         <div class="create-table">
             <h3>Create Table</h3>
             <ul class="list-group ">
                 <li class="list-group-item">
-                    <div style="float: left; margin-right: 15px;">Number of playerts:</div>
-                    <input type="range" class="size" name="points" min="3" max="6" value="3">
-                    <button type="button" class="btn btn-primary create" style="float: right; margin-top: -4px;">Create</button></li>
+                    <div style="float: left; margin-right: 15px;">Number of players:</div>
+                    <input type="range" class="size" name="points" min="{{config.min_table_size}}" max="{{config.max_table_size}}">
+                    <button type="button" class="btn btn-primary create" style="float: right; margin-top: -4px;">Create</button>
+                </li>
             </ul>
         </div>
+        {{/if}}
     </div>
 </template>
 
 <template name="open_tables">
-    <ul class="list-group">
+    <ul class="list-group open_tables">
         {{#each tables}}
-            <li class="list-group-item table {{#if sitting}} sitting{{/if}}">
+            <li class="list-group-item table {{#if sitting}} sitting{{/if}}" table-id="{{_id}}">
                 {{#each chairs}}
                     {{#if fb_id}}
                         <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture"></span>
@@ -104,6 +103,24 @@
                         <span class="chair empty-chair"></span>
                     {{/if}}
                 {{/each}}
+            </li>
+        {{/each}}
+    </ul>
+</template>
+
+<template name="running_tables">
+    <ul class="list-group running_tables">
+        {{#each tables}}
+            <li class="list-group-item table {{#if sitting}} sitting{{/if}}" table-id="{{_id}}">
+                {{#each players}}
+                    <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture"></span>
+                {{/each}}
+
+                {{#if sitting}} 
+                    <button type="button" class="btn btn-primary resume" style="float: right; margin-top: -4px;">Resume</button>
+                {{else}}
+                    <button type="button" class="btn btn-primary watch" style="float: right; margin-top: -4px;">Watch</button>
+                {{/if}}
             </li>
         {{/each}}
     </ul>
