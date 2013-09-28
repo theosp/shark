@@ -15,5 +15,11 @@ Meteor.publish("openTables", function () {
 Meteor.publish("runningTables", function () {
     winston.info("runningTables subscribed");
 
-    return Tables.find({state: "running"});
+    return Tables.find({state: "running"}, {fields: {state: 1, players: 1}});
+});
+
+Meteor.publish("game", function (table_id) {
+    winston.info("game subscribed");
+
+    return Tables.find({_id: table_id});
 });

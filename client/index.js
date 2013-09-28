@@ -1,16 +1,55 @@
-Session.set("is_viewing_game", false);
+Session.set("table", false);
 
 Meteor.subscribe("userData");
 
 var open_tables_sub, running_tables_sub;
 Deps.autorun(function () {
     // unsubscribe form openTables/runningTables when viewing game
-    if (!Session.get("is_viewing_game")) {
+    if (!Session.get("table")) {
         open_tables_sub = Meteor.subscribe("openTables");
         running_tables_sub = Meteor.subscribe("runningTables");
     } else {
-        open_tables_sub.stop();
-        running_tables_sub.stop();
+        if (typeof open_tables_sub !== 'undefined') {
+            open_tables_sub.stop();
+        }
+
+        if (typeof running_tables_sub !== 'undefined') {
+            running_tables_sub.stop();
+        }
+    }
+});
+
+var game_sub;
+Deps.autorun(function () {
+    // game subscription/unsubscription
+    if (!Session.get("table")) {
+        if (typeof game_sub !== 'undefined') {
+            game_sub.stop();
+        }
+    } else {
+        game_sub = Meteor.subscribe("game", Session.get("table"));
+
+        if (Tables.find({_id: Session.get("table")}).count() === 0) {
+            Session.set("table", false);
+        }
+    }
+});
+
+var open_tables_observer;
+Deps.autorun(function () {
+    // observe the tables i'm sitting on as long as i'm not watching a game
+    if (!Session.get("table")) {
+        open_tables_observer = Tables.find({"players.id": Meteor.userId()}).observeChanges({
+            changed: function (id, fields) {
+                if (_.has(fields, "state") && fields.state === "running") {
+                    Session.set("table", id);
+                }
+            }
+        });
+    } else {
+        if (typeof open_tables_observer !== 'undefined') {
+            open_tables_observer.stop();
+        }
     }
 });
 
@@ -23,7 +62,7 @@ var getPlayerStructure = function () {
 // navigator
 Template.navigation.events({
 	"click .logo": function(e, tmpl){
-        Session.set("is_viewing_game", false);
+        Session.set("table", false);
 	}
 });
 
@@ -44,7 +83,7 @@ Template.tables.rendered = function () {
 
 Template.tables.events({
 	"click .create": function(e, tmpl){
-        Tables.insert({state: "open", size: parseInt($(tmpl.find("input")).val()), players: [getPlayerStructure()]});
+        var table_id = Tables.insert({state: "open", size: parseInt($(tmpl.find("input")).val()), players: [getPlayerStructure()]});
 	}
 });
 
@@ -83,7 +122,6 @@ Template.open_tables.rendered = function () {
     $(".logged-in .open_tables .table:not(.sitting) .empty-chair").tooltip({title: "Click to join!"})
     $(".open_tables .myself").tooltip({title: "Click to leave"})
 };
-
 
 Template.open_tables.events({
     "click .myself": function (e) {
@@ -126,6 +164,15 @@ Template.running_tables.helpers({
     }
 });
 
+Template.running_tables.events({
+    "click .view-table": function (e) {
+        var $t = $(e.target);
+        var table_id = $t.parents(".table").attr("table-id");
+
+        Session.set("table", table_id);
+    }
+});
+
 // user_loggedout
 Template.user_loggedout.events({
 	"click #login": function(e, tmpl){
@@ -158,13 +205,12 @@ Template.user_loggedin.events({
 
 // view
 Template.view.is_viewing_game = function () {
-    return Session.get("is_viewing_game");
+    return Session.get("table");
 };
 
 // game
 Template.game.helpers({
-    map: "003333300000000000020202000000000000010100100000000000000000000000000000000000000000000000000000000000000000000000000000",
-    prices: [1, 0, 0, 0],
-    stocks: [0, 2, 0, 0],
-    markers: [1, 0, 0, 0],
+    game: function () {
+        return Tables.findOne({_id: Session.get("table")});
+    }
 });

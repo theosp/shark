@@ -98,7 +98,7 @@
             <li class="list-group-item table {{#if sitting}} sitting{{/if}}" table-id="{{_id}}">
                 {{#each chairs}}
                     {{#if fb_id}}
-                        <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture"></span>
+                        <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture" alt="{{name}}" title="{{name}}"></span>
                     {{else}}
                         <span class="chair empty-chair"></span>
                     {{/if}}
@@ -113,22 +113,20 @@
         {{#each tables}}
             <li class="list-group-item table {{#if sitting}} sitting{{/if}}" table-id="{{_id}}">
                 {{#each players}}
-                    <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture"></span>
+                    <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture" alt="{{name}}" title="{{name}}"></span>
                 {{/each}}
 
-                {{#if sitting}} 
-                    <button type="button" class="btn btn-primary resume" style="float: right; margin-top: -4px;">Resume</button>
-                {{else}}
-                    <button type="button" class="btn btn-primary watch" style="float: right; margin-top: -4px;">Watch</button>
-                {{/if}}
+                <button type="button" class="btn btn-primary view-table" style="float: right; margin-top: -4px;">
+                    {{#if sitting}}Resume{{else}}Watch{{/if}}
+                </button>
             </li>
         {{/each}}
     </ul>
 </template>
 
 <template name="game">
-    <table>{{map}}</table>
-    <div class="prices">{{prices}}</div>
-    <div class="stocks">{{stocks}}</div>
-    <div class="markers">{{markers}}</div>
+    {{#with game}}
+        <table>{{map}}</table>
+        <div class="prices">{{prices}}</div>
+    {{/with}}
 </template>
