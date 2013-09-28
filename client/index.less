@@ -58,10 +58,11 @@ body {
         border: thin dashed black;
     }
 
-    .open_tables .logged-in .table:not(.sitting) &.empty-chair {
+    .logged-in .open_tables .table:not(.sitting) &.empty-chair {
+        cursor: pointer;
+
         &:hover {
             background-color: #f8f8f8;
-            cursor: pointer;
         }
     }
 

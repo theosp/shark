@@ -80,7 +80,7 @@ Template.open_tables.helpers({
 });
 
 Template.open_tables.rendered = function () {
-    $(".open_tables .logged-in .table:not(.sitting) .empty-chair").tooltip({title: "Click to join!"})
+    $(".logged-in .open_tables .table:not(.sitting) .empty-chair").tooltip({title: "Click to join!"})
     $(".open_tables .myself").tooltip({title: "Click to leave"})
 };
 
