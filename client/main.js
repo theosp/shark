@@ -1,37 +1,20 @@
-Session.set("table", false);
+var user_data_sub = new SubscriptionManager("userData"),
+    open_tables_sub = new SubscriptionManager("openTables"),
+    running_tables_sub = new SubscriptionManager("runningTables"),
+    game_sub = new SubscriptionManager("game");
 
-Meteor.subscribe("userData");
+user_data_sub.subscribe();
 
-var open_tables_sub, running_tables_sub;
 Deps.autorun(function () {
     // unsubscribe form openTables/runningTables when viewing game
-    if (!Session.get("table")) {
-        open_tables_sub = Meteor.subscribe("openTables");
-        running_tables_sub = Meteor.subscribe("runningTables");
+    if (Session.get("table") === false) {
+        open_tables_sub.subscribe();
+        running_tables_sub.subscribe();
+        game_sub.stop();
     } else {
-        if (typeof open_tables_sub !== 'undefined') {
-            open_tables_sub.stop();
-        }
-
-        if (typeof running_tables_sub !== 'undefined') {
-            running_tables_sub.stop();
-        }
-    }
-});
-
-var game_sub;
-Deps.autorun(function () {
-    // game subscription/unsubscription
-    if (!Session.get("table")) {
-        if (typeof game_sub !== 'undefined') {
-            game_sub.stop();
-        }
-    } else {
-        game_sub = Meteor.subscribe("game", Session.get("table"));
-
-        if (Tables.find({_id: Session.get("table")}).count() === 0) {
-            Session.set("table", false);
-        }
+        open_tables_sub.stop();
+        running_tables_sub.stop();
+        game_sub.subscribe(Session.get("table"));
     }
 });
 
@@ -204,13 +187,112 @@ Template.user_loggedin.events({
 });
 
 // view
-Template.view.is_viewing_game = function () {
-    return Session.get("table");
+Template.view.loading = function () {
+    return typeof Session.get("table") === "undefined";
+};
+
+Template.view.game_view = function () {
+    return Session.get("table") !== false;
 };
 
 // game
 Template.game.helpers({
     game: function () {
         return Tables.findOne({_id: Session.get("table")});
+    },
+});
+
+// map
+Template.map.helpers({
+    cells: function () {
+        if (typeof this.map === 'undefined') {
+            return "";
+        }
+
+        var map_array = this.map.split("");
+
+        var cells = "";
+        for (var i = 0; i < map_array.length; i++) {
+            var cell = map_array[i];
+        
+            if (i % 12 === 0) {
+                cells += "<tr>";
+            }
+
+            cells += '<td class="blue"><div></div></td>';
+
+            if (i % 12 === 11) {
+                cells += "</tr>";
+            }
+        }
+
+        return cells;
+    },
+
+    cells2: function () {
+        if (typeof this.map === 'undefined') {
+            return "";
+        }
+
+        var map_array = this.map.split("");
+
+        var sectors = "";
+        for (var i = 0; i < map_array.length; i++) {
+            var cell = map_array[i];
+        
+            if (i % 12 === 0) {
+                sectors += "<tr>";
+            }
+
+            sectors += '<td class="blue"><div></div></td>';
+
+            if (i % 12 === 11) {
+                sectors += "</tr>";
+            }
+        }
+
+        return sectors;
+    },
+
+    sectorCells: function (sector) {
+        sector = parseInt(sector, 10);
+
+        var cells = "";
+        for (var i = 0; i < 12; i++) {
+            cells += '<div class="cell" style="width: 10%; height: 10%;"></div>';
+        }
+        
+        return cells;
+    },
+
+    fmap: function (sectors_x, sectors_y, cells_x, cells_y) {
+        sectors_x = parseInt(sectors_x, 10);
+        sectors_y = parseInt(sectors_y, 10);
+        cells_x = parseInt(cells_x, 10);
+        cells_y = parseInt(cells_y, 10);
+
+        var map = '<div class="fmap">';
+        for (var i = 0; i < sectors_y; i++) {
+            map += '<div class="sectors-container">';
+            for (var j = 0; j < sectors_x; j++) {
+                map += '<div class="sector">';
+                for (var k = 0; k < cells_y; k++) {
+                    map += '<div class="cells-container">';
+                    for (var l = 0; l < cells_x; l++) {
+                        map += '<div class="cell"><div class="token"></div></div>';
+                    }
+                    map += '</div>';
+                }
+                map += '</div>';
+            }
+            map += '</div>';
+        }
+        map += '</div>';
+
+        return map;
     }
 });
+
+Template.map.rendered = function () {
+    $(window).resize();
+};

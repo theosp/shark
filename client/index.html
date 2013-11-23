@@ -1,6 +1,5 @@
 <head>
     <title>Shark</title>
-    <link rel="stylesheet" href="/css/bootstrap-theme.css">
 </head>
 
 <body>
@@ -20,7 +19,7 @@
 <template name="navigation">
     <div class="navbar navbar-fixed-top">
         <div class="container">
-            <a href="#" class="navbar-brand logo">Shark</a>
+            <a href="/" class="navbar-brand logo">Shark</a>
             <ul class="nav navbar-nav pull-right">
                 {{>user_info}}
             </ul>
@@ -60,35 +59,45 @@
 </template>
 
 <template name="view">
-    {{#if is_viewing_game}}
-        {{>game}}
+    {{#if loading}}
+        {{>loading}}
     {{else}}
-        {{>tables}}
+        {{#if game_view}}
+            {{>game}}
+        {{else}}
+            {{>tables}}
+        {{/if}}
     {{/if}}
 </template>
 
-<template name="tables">
-    <div class="col-lg-6">
-        <h3>Running Tables</h3>
-        {{>running_tables}}
-    </div>
-    
-    <div class="col-lg-6 open-tables{{#if currentUser}} logged-in{{/if}}">
-        <h3>Open Tables</h3>
-        {{>open_tables}}
+<template name="loading">
+Loading...
+</template>
 
-        {{#if can_create_table}}
-        <div class="create-table">
-            <h3>Create Table</h3>
-            <ul class="list-group ">
-                <li class="list-group-item">
-                    <div style="float: left; margin-right: 15px;">Number of players:</div>
-                    <input type="range" class="size" name="points" min="{{config.min_table_size}}" max="{{config.max_table_size}}">
-                    <button type="button" class="btn btn-primary create" style="float: right; margin-top: -4px;">Create</button>
-                </li>
-            </ul>
+<template name="tables">
+    <div class="row">
+        <div class="col-lg-6">
+            <h3>Running Tables</h3>
+            {{>running_tables}}
         </div>
-        {{/if}}
+        
+        <div class="col-lg-6 open-tables{{#if currentUser}} logged-in{{/if}}">
+            <h3>Open Tables</h3>
+            {{>open_tables}}
+
+            {{#if can_create_table}}
+            <div class="create-table">
+                <h3>Create Table</h3>
+                <ul class="list-group ">
+                    <li class="list-group-item">
+                        <div style="float: left; margin-right: 15px;">Number of players:</div>
+                        <input type="range" class="size" name="points" min="{{config.min_table_size}}" max="{{config.max_table_size}}">
+                        <button type="button" class="btn btn-primary create" style="float: right; margin-top: -4px;">Create</button>
+                    </li>
+                </ul>
+            </div>
+            {{/if}}
+        </div>
     </div>
 </template>
 
@@ -116,9 +125,9 @@
                     <span class="chair {{myself}}"><img src="https://graph.facebook.com/{{fb_id}}/picture" alt="{{name}}" title="{{name}}"></span>
                 {{/each}}
 
-                <button type="button" class="btn btn-primary view-table" style="float: right; margin-top: -4px;">
+                <a href="/table/{{_id}}/" type="button" class="btn btn-primary view-table">
                     {{#if sitting}}Resume{{else}}Watch{{/if}}
-                </button>
+                </a>
             </li>
         {{/each}}
     </ul>
@@ -126,7 +135,20 @@
 
 <template name="game">
     {{#with game}}
-        <table>{{map}}</table>
+        {{>map}}
+
         <div class="prices">{{prices}}</div>
     {{/with}}
+</template>
+
+<template name="map">
+    <div class="row">
+        <div class="col-lg-6">
+            <table class="table table-bordered map">
+                {{{cells}}}
+            </table>
+
+            {{{ fmap 3 2 4 5 }}}
+        </div>
+    </div>
 </template>
